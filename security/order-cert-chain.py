@@ -93,15 +93,18 @@ if verbose_level > 1:
 i = 0
 while i < len(certs):
     cert = certs[i]
-    issuer_index = find_issuer(cert.issuer)
-    if issuer_index is not None and issuer_index < i:
-        issuer_cert = certs[issuer_index]
-        del certs[issuer_index]
-        certs.insert(i, issuer_cert)
-        if verbose_level > 1:
-            print(f"  moved certificate '{issuer_cert.subject}' after '{cert.subject}'")
-        if verbose_level > 2:
-            print(f"    issuer cert index {issuer_index} was before {i}")
+    if cert.issuer:
+        issuer_index = find_issuer(cert.issuer)
+        if issuer_index is not None and issuer_index < i:
+            issuer_cert = certs[issuer_index]
+            del certs[issuer_index]
+            certs.insert(i, issuer_cert)
+            if verbose_level > 1:
+                print(f"  moved certificate '{issuer_cert.subject}' after '{cert.subject}'")
+            if verbose_level > 2:
+                print(f"    issuer cert index {issuer_index} was before {i}")
+        else:
+            i += 1
     else:
         i += 1
 
