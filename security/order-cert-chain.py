@@ -6,7 +6,16 @@ from typing import List, Optional
 
 import sys
 
-parser = argparse.ArgumentParser(description='Ensure order of certificates in the chain.')
+SUBJECT = "subject="
+ISSUER = "issuer="
+
+description = """
+Ensure the correct order of certificates in a PEM chain.
+This script requires the chain to include bag attributes (added if given PEM was created from
+a PKCS#12/pfx file) to determine the certificate order.
+"""
+
+parser = argparse.ArgumentParser(description=description)
 
 parser.add_argument('--verbose', '-v', help='verbose', action='count', default=0)
 parser.add_argument('--quiet', '-q', help='no output', action='store_true', default=False)
@@ -39,10 +48,10 @@ class Cert:
 
     def process_preamble(self) -> None:
         for l in self.preamble:
-            if l.startswith("subject="):
-                self.subject = l[8:]
-            elif l.startswith("issuer="):
-                self.issuer = l[7:]
+            if l.startswith(SUBJECT):
+                self.subject = l[len(SUBJECT):]
+            elif l.startswith(ISSUER):
+                self.issuer = l[len(ISSUER):]
 
 
 try:
